@@ -62,21 +62,19 @@ bool fill_map(data_t *d, FILE *f) {
 
 void set_data(char *av) {
     FILE *f = av ? fopen(av, "r") : stdin;
-
-    if (!f) {
+    if (f) {
+        data_t d;
+        if (fscanf(f, "%d %c %c %c\n", &d.nbline, &d.empty, &d.obstacle, &d.full) == 4 
+            && d.nbline && d.empty != d.obstacle && d.obstacle != d.full && d.empty != d.full) {
+                if (fill_map(&d, f))
+                    return (bsq(&d));
+                freetab(d.map);
+        }
+        fclose(f);
+        fprintf(stdout, "Error: invald map\n");
+    }
+    else
         fprintf(stdout, "Error: can't open file\n");
-        return;
-    }
-
-    data_t d;
-    if (fscanf(f, "%d %c %c %c\n", &d.nbline, &d.empty, &d.obstacle, &d.full) == 4 
-        && d.nbline && d.empty != d.obstacle && d.obstacle != d.full && d.empty != d.full) {
-            if (fill_map(&d, f))
-                return (bsq(&d));
-            freetab(d.map);
-    }
-    fclose(f);
-    fprintf(stdout, "Error: invald map\n");
 }
 
 int main(int ac, char **av) {
